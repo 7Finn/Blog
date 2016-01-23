@@ -9,68 +9,67 @@ var express = require('express');
 var router = express.Router();
 var debug = require('debug')('api:Serve');
 
-var data = {
-"posts": [
-    {
-      "title": "Lorem ipsum",
-      "text": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    },
-    {
-      "title": "Sed egestas",
-      "text": "Sed egestas, ante et vulputate volutpat, eros pede semper est, vitae luctus metus libero eu augue. Morbi purus libero, faucibus adipiscing, commodo quis, gravida id, est. Sed lectus."
-    }
-  ]
-};
-
 module.exports = function(db) {
+  var postsManager = require('../models/posts')(db);
   // // GET
   router.get('/posts', function(req, res, next) {
     var posts = [];
-    data.posts.forEach(function (post, i) {
-      posts.push({
-        id: i,
-        title: post.title,
-        text: post.text.substr(0, 50) + '...'
-      });
+    postsManager.showAllPosts(function(err, data) {
+      if (err) {
+        //err
+      } else {
+        data.forEach(function (post, i) {
+          posts.push({
+            id: post._id,
+            title: post.title,
+            text: post.text.substr(0, 50) + '...'
+          });
+        }
+        , function(err) {
+          res.json({
+            posts: posts
+          });
+        });
+      }
     });
-    res.json({
-      posts: posts
-    });
+    
   });
 
   router.route('/post/:id')
   .get(function(req, res, next) {
     var id = req.params.id;
-    if (id >= 0 && id < data.posts.length) {
-      res.json({
-        post: data.posts[id]
-      });
-    } else {
-      res.json(false);
-    }
+    postsManager.findPost(id, function(err, data) {
+      if (data) {
+        res.json({
+          post: data
+        });
+      } else {
+        res.json(false);
+      }
+    });
   }).put(function(req, res, next) {
     var id = req.params.id;
-
-    if (id >= 0 && id < data.posts.length) {
-      data.posts[id] = req.body;
-      res.json(true);
-    } else {
-      res.json(false);
-    }
+    postsManager.updatePost(id, req.body, function(err) {
+      if (err) {
+        res.json(false);
+      } else {
+        res.json(true);
+      }
+    });
   }).delete(function(req, res, next) {
     var id = req.params.id;
-
-    if (id >= 0 && id < data.posts.length) {
-      data.posts.splice(id, 1);
-      res.json(true);
-    } else {
-      res.json(false);
-    }
+    postsManager.deletePost(id, function(err) {
+      if (err) {
+        res.json(false);
+      } else {
+        res.json(true);
+      }
+    })
   });
 
   router.post('/post', function(req, res, next) {
-    data.posts.push(req.body);
-    res.json(req.body);    
+    postsManager.createPost(req.body);
+    res.json(req.body);
   });
 
 
