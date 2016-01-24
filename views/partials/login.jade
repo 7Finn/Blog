@@ -1,0 +1,11 @@
+#alert.alert(ng-class="{true: 'alert-info', false: 'alert-danger'}[alertType]", role="alert") {{ warning }} 没有账号？
+    a.alert-link(href="/regist") 点击注册
+
+form
+    .form-group
+        label Email
+        input.form-control(ng-model='form.username', type='email', placeholder='Email')
+    .form-group
+        label Password 
+        input.form-control(ng-model='form.password', type='password', placeholder='Password')
+    button.btn.btn-default(ng-click="loginBtn()") Submit

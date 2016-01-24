@@ -5,15 +5,13 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var errorHandler = require('errorhandler');
-
-// var express = require('express'),
-//   routes = require('./routes'),
-//   api = require('./routes/api');
-
-// var app = module.exports = express.createServer();
+var session = require('express-session');
+var FileStore = require('session-file-store')(session);
 
 // // Configuration
 module.exports = function(db) {
@@ -25,13 +23,24 @@ module.exports = function(db) {
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'jade');
 
-
+  app.use(logger('dev'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(express.static(path.join(__dirname, 'public')));
-  app.use('/', routes);
-  app.use('/api', api);
 
+
+  app.use(cookieParser());
+  app.use(session({
+    store: new FileStore(),
+    resave: false,
+    saveUninitialized: false,
+    secret: 'finn secret',
+    cookie: { maxAge: 60000 },
+  }));
+
+
+  app.use('/api', api); 
+  app.use('/', routes);
   app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;

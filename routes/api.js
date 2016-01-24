@@ -11,7 +11,11 @@ var debug = require('debug')('api:Serve');
 
 module.exports = function(db) {
   var postsManager = require('../models/posts')(db);
+  var userManager = require('../models/users')(db);
+
   // // GET
+
+
   router.get('/posts', function(req, res, next) {
     var posts = [];
     postsManager.showAllPosts(function(err, data) {
@@ -72,7 +76,47 @@ module.exports = function(db) {
     res.json(req.body);
   });
 
+  router.post('/login', function(req, res, next) {
+    try {
+      userManager.findUser(req.body.username, req.body.password, function(err, user) {
+        if (err) {
+          console.log("出错: ");
+          res.json(false);
+        } else {
+          req.session.user = user;
+          console.log("登录成功: ");
+          console.log(user);
+          res.json(true);
+        }  
+      });
+    } catch(error) {
+        console.log("登录出错:" + error);
+        res.json(false);
+      };
+  });
 
+  router.post('/regist', function(req, res, next) {
+    var user = req.body;
+    console.log("api/regist: ")
+    console.log(user);
+    userManager.checkUser(user)
+      .then(userManager.createUser)
+      .then(function(){
+        req.session.user = user;
+        debug("User session", user);
+        res.json(true);
+      })
+      .catch(function(error){
+        console.log("Regist Error:" + error);
+        res.json({
+          warning : error
+        })
+      });
+  });
+
+  router.all('*', function(req, res, next){
+    req.session.user ? next() : res.redirect('/signin');
+  });
   return router;
 }
 

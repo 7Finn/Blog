@@ -58,3 +58,53 @@ function DeletePostCtrl($scope, $http, $location, $routeParams) {
     $location.url('/');
   };
 }
+
+function LoginCtrl($scope, $http, $location) {
+  $scope.form = {
+    username : '',
+    password : ''
+  };
+  $scope.alertType = true;
+  $scope.loginBtn = function () {
+    if (!($scope.form.username) || !($scope.form.password)) {
+      $scope.warning = "用户信息不合法。";
+      $scope.alertType = false;
+    } else {
+      $http.post('/api/login', $scope.form).
+      success(function(data) {
+        if (data == "false") {
+          console.log("This is false");
+          $scope.warning = "用户信息错误。";
+          $scope.alertType = false;
+        } else {
+          console.log("This is true");
+          $location.path('/');
+        }
+      })
+    }
+  };
+}
+
+
+function RegistCtrl($scope, $http, $location) {
+  $scope.form = {
+    username : '',
+    password : '',
+    rePassword : '',
+  };
+  $scope.alertType = true;
+  $scope.registBtn = function () {
+    if (!($scope.form.username) || !($scope.form.password) || !($scope.form.rePassword)) {
+      $scope.warning = "用户信息不合法。";
+      $scope.alertType = false;
+    } else if ($scope.form.password != $scope.form.rePassword) {
+      $scope.warning = "两次输入密码不一致。";
+      $scope.alertType = false;
+    } else {
+      $http.post('/api/regist', $scope.form).
+      success(function(data) {
+        $location.path('/login');
+      });
+    }
+  };
+}

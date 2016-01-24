@@ -5,7 +5,22 @@
 var express = require('express');
 var router = express.Router();
 
-module.exports = function(db) {
+module.exports = function(db) {    
+    // router.all('*', function(req, res, next){
+    //     req.session.user ? next() : res.redirect('/signin');
+    // });
+    router.get('/signout', function(req, res, next) {
+      delete req.session.user;
+      res.redirect('/login');
+    });
+  
+
+  
+    // router.all('*', function(req, res, next){
+    //   req.session.user ? next() : res.redirect('/signin');
+    // });
+
+
     router.get('/', function(req, res){
         res.render('index');
     });
@@ -15,9 +30,10 @@ module.exports = function(db) {
         res.render('partials/' + name);
     });
 
-    // router.get('*', function(req, res){
-    //     res.render('index');
-    // });
+
+    router.all('*', function(req, res){
+        res.render('index');
+    });
     
     return router;
 }

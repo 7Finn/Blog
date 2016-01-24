@@ -24,6 +24,14 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
         templateUrl: 'partials/deletePost',
         controller: DeletePostCtrl
       }).
+      when('/login', {
+        templateUrl: 'partials/login',
+        controller: LoginCtrl
+      }).
+      when('/regist', {
+        templateUrl: 'partials/regist',
+        controller: RegistCtrl
+      }).
       otherwise({
         redirectTo: '/'
       });

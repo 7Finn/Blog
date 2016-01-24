@@ -1,0 +1,14 @@
+#alert.alert(ng-class="{true: 'alert-info', false: 'alert-danger'}[alertType]", role="alert") {{ warning }} 已有账号？
+    a.alert-link(href="/login") 点击登录
+
+form
+    .form-group
+        label Email
+        input.form-control(ng-model='form.username', type='email', placeholder='Email')
+    .form-group
+        label Password 
+        input.form-control(ng-model='form.password', type='password', placeholder='Password')
+    .form-group
+        label Repeat password
+        input.form-control(ng-model='form.rePassword', type='password', placeholder='Repeat password')
+    button.btn.btn-default(ng-click="registBtn()") Submit
