@@ -32,6 +32,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
         templateUrl: 'partials/regist',
         controller: RegistCtrl
       }).
+      when('/logout', {
+        templateUrl: 'partials/logout',
+        controller: LogoutCtrl
+      }).
       otherwise({
         redirectTo: '/'
       });

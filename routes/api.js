@@ -12,8 +12,21 @@ module.exports = function(db) {
   var postsManager = require('../models/posts')(db);
   var userManager = require('../models/users')(db);
 
-  // // GET
 
+  // router.all('*', function(req, res, next){
+  //   req.session.user ? next() : res.redirect('/login');
+  // });
+  router.get('/user', function(req, res) {
+      if (req.session.user) {
+          res.json({
+              username : req.session.user.username
+          })
+      } else {
+          res.json({
+              username : ''
+          })
+      }
+  });
 
   router.get('/posts', function(req, res, next) {
     var posts = [];
@@ -24,6 +37,7 @@ module.exports = function(db) {
         data.forEach(function (post, i) {
           posts.push({
             id: post._id,
+            author : post.author,
             title: post.title,
             text: post.text.substr(0, 50) + '...'
           });
@@ -39,7 +53,11 @@ module.exports = function(db) {
 
   router.post('/post/comment/:id', function(req, res, next) {
     var id = req.params.id;
-    postsManager.addComment(id, req.body);
+    var comment = {
+      author : req.session.user.username,
+      commentText : req.body.commentText,
+    }
+    postsManager.addComment(id, comment);
     res.json(true);
   });
 
@@ -48,8 +66,15 @@ module.exports = function(db) {
     var id = req.params.id;
     postsManager.findPost(id, function(err, data) {
       if (data) {
+        var permissionComment = true;
+        var permissionEdit = false;
+        if (!req.session.user) permissionComment = false;
+        else if (req.session.user.username == data.author 
+                || req.session.user.username == "admin@finn.com") permissionEdit = true;
         res.json({
-          post: data
+          post: data,
+          permissionComment : permissionComment,
+          permissionEdit : permissionEdit,
         });
       } else {
         res.json(false);
@@ -58,22 +83,39 @@ module.exports = function(db) {
   })
   .put(function(req, res, next) {
     var id = req.params.id;
-    postsManager.updatePost(id, req.body);
-    res.json(true);
+    if (!req.session.user) res.json(false);
+    postsManager.findPost(id, function(err, data) {
+      if (data && (req.session.user.username == data.author 
+        || req.session.user.username == "admin@finn.com")) {
+        postsManager.updatePost(id, req.body);
+        res.json(true);
+      } else {
+        res.json(false);
+      }
+    });
   })
   .delete(function(req, res, next) {
     var id = req.params.id;
-    postsManager.deletePost(id, function(err) {
-      if (err) {
-        res.json(false);
-      } else {
+    if (!req.session.user) res.json(false);
+    postsManager.findPost(id, function(err, data) {
+      if (data && (req.session.user.username == data.author 
+        || req.session.user.username == "admin@finn.com")) {
+        postsManager.deletePost(id);
         res.json(true);
+      } else {
+        res.json(false);
       }
     });
   });
 
   router.post('/post', function(req, res, next) {
-    postsManager.createPost(req.body);
+    var post = {
+      author : req.session.user.username,
+      title : req.body.title,
+      text : req.body.text,
+      comments : [],
+    }
+    postsManager.createPost(post);
     res.json(req.body);
   });
 
@@ -87,7 +129,7 @@ module.exports = function(db) {
           req.session.user = user;
           console.log("登录成功: ");
           console.log(user);
-          res.json(true);
+          res.json(user);
         }  
       });
     } catch(error) {
@@ -95,6 +137,8 @@ module.exports = function(db) {
         res.json(false);
       };
   });
+
+
 
   router.post('/regist', function(req, res, next) {
     var user = req.body;
@@ -113,13 +157,10 @@ module.exports = function(db) {
       });
   });
 
-  router.get('/signout', function(req, res, next) {
+  router.get('/logout', function(req, res, next) {
+    console.log("/logout");
     delete req.session.user;
     res.redirect('/login');
-  });
-
-  router.all('*', function(req, res, next){
-    req.session.user ? next() : res.redirect('/login');
   });
 
   return router;

@@ -17,10 +17,8 @@ module.exports = function(db) {
                 callback(err, doc);
             });
         },
-        deletePost: function(id, callback) {
-            posts.remove({_id:ObjectID(id)}, function(err) {
-                callback(err);
-            });
+        deletePost: function(id) {
+            posts.remove({_id:ObjectID(id)});
         },
         updatePost: function(id, data) {
             posts.updateOne({_id:ObjectID(id)}, {$set:{title:data.title, text:data.text}});

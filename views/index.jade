@@ -1,7 +1,7 @@
 extends layout
 
 block body
-  nav.navbar.navbar-default
+  nav.navbar.navbar-default(ng-controller="navCtrl")
     .container
       // Brand and toggle get grouped for better mobile display
       .navbar-header
@@ -17,12 +17,9 @@ block body
           li.active
             a(href="/") 首页
               span.sr-only (current)
-        form.navbar-form.navbar-left(role="search")
-          .form-group
-            input.form-control(type="text", placeholder="Search")
         ul.nav.navbar-nav.navbar-right
           li
-            a(href="#") {{ username }}
+            a(href="#") {{ currentUsername }}
           li
             a(ng-href="{{ signAdress }}") {{ sign }}
 

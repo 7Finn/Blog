@@ -20,6 +20,18 @@ textarea {
   display: none;
 }
 
+.display-inline {
+  display: inline;
+}
+
+.search-form {
+  display: inline;
+}
+
+.containter-marbottom-20 {
+  margin-bottom: 20px;
+}
+
 .span-left-30 {
   margin-left: 30px;
 }

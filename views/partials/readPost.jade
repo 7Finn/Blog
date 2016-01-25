@@ -3,11 +3,15 @@ section
     .panel-heading
       .panel-title {{post.title}}
     .panel-body 
-      p Author: 7Finn
+      p Author: {{post.author}}
       {{post.text}}
-  button.btn.btn-success(ng-click="addComment()") Comment
-  a.btn.btn-primary.btn-left-20(href='/editPost/{{post._id}}', type="button") Edit
-  a.btn.btn-danger.btn-left-20(href='/deletePost/{{post._id}}', type="button") Delete
+  button(class="btn btn-success",
+    ng-class="{true: 'display-inline', false: 'display-none'}[permissionComment]",
+    ng-click="addComment()") Comment
+  a(class="btn btn-primary btn-left-20", href='/editPost/{{post._id}}',
+    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button") Edit
+  a(class="btn btn-danger btn-left-20", href='/deletePost/{{post._id}}',
+    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button") Delete
 
 
   form(class="comment-form" ng-class="{true: 'display-block', false: 'display-none'}[formType]")
@@ -25,7 +29,7 @@ section
           .media-left
             img.media-object.img-size(src="img/head.jpg", alt="...")
           .media-body
-            h4.media-heading Test author {{ comment.author }}
+            h4.media-heading {{ comment.author }}
             | {{ comment.commentText }}...
 
     

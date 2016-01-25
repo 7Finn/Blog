@@ -35,7 +35,7 @@ module.exports = function(db) {
     resave: false,
     saveUninitialized: false,
     secret: 'finn secret',
-    cookie: { maxAge: 60000 },
+    cookie: { maxAge: 60000 * 20 },
   }));
 
 
