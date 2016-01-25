@@ -1,3 +1,29 @@
 section
-  h3 {{post.title}}
-  div {{post.text}}
+  .panel.panel-default
+    .panel-heading
+      .panel-title {{post.title}}
+    .panel-body 
+      p Author: 7Finn
+      {{post.text}}
+  button.btn.btn-success(ng-click="addComment()") Comment
+
+
+  form(class="comment-form" ng-class="{true: 'display-block', false: 'display-none'}[formType]")
+    .form-group
+      label Comment text
+      textarea.form-control(ng-model='form.commentText', cols='50', rows='3')
+    .cow
+      div(class="alert alert-danger" ng-class="{true: 'display-none', false: 'display-block'}[alertType]" ,   role="alert") Text content can not be empty
+      button.btn.btn-success(ng-click='submitComment()', type="submit") Submit
+  
+  div(ng-repeat='comment in post.comments')
+    .panel.panel-default.comment-panel
+      .panel-body
+        .media
+          .media-left
+            img.media-object.img-size(src="img/head.jpg", alt="...")
+          .media-body
+            h4.media-heading Comment Test1 {{ comment.author }}
+            | {{ comment.commentText }}...
+
+    

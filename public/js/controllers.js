@@ -10,34 +10,68 @@ function IndexCtrl($scope, $http) {
 }
 
 function AddPostCtrl($scope, $http, $location) {
-  $scope.form = {};
+  var post = {
+    title : '',
+    text : '',
+    comments : [],
+  };
+  $scope.alertType = true;
   $scope.submitPost = function () {
-    $http.post('/api/post', $scope.form).
+    if (!($scope.form.title) || !($scope.form.text)) {
+      $scope.alertType = false;
+    } else {
+      post.title = $scope.form.title;
+      post.text = $scope.form.text;
+      console.log(post);
+      $http.post('/api/post', post).
       success(function(data) {
         $location.path('/');
       });
+    }
   };
 }
 
 function ReadPostCtrl($scope, $http, $routeParams) {
+  $scope.alertType = true;
+  $scope.formType = false;
   $http.get('/api/post/' + $routeParams.id).
     success(function(data) {
       $scope.post = data.post;
     });
+
+  $scope.addComment = function () {
+    $scope.formType = true;
+  }
+
+  $scope.submitComment = function () {
+    if (!($scope.form.commentText)) {
+      $scope.alertType = false;
+    } else {
+      $http.post('/api/post/comment/' + $routeParams.id, $scope.form).
+      success(function(data) {
+        // $location.url('/readPost/' + $routeParams.id);
+      });
+    }
+  }
 }
 
 function EditPostCtrl($scope, $http, $location, $routeParams) {
   $scope.form = {};
+  $scope.alertType = true;
   $http.get('/api/post/' + $routeParams.id).
     success(function(data) {
       $scope.form = data.post;
     });
 
   $scope.editPost = function () {
-    $http.put('/api/post/' + $routeParams.id, $scope.form).
+    if (!($scope.form.title) || !($scope.form.text)) {
+      $scope.alertType = false;
+    } else {
+      $http.put('/api/post/' + $routeParams.id, $scope.form).
       success(function(data) {
         $location.url('/readPost/' + $routeParams.id);
       });
+    }
   };
 }
 

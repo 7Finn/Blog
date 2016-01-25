@@ -7,7 +7,6 @@
 
 var express = require('express');
 var router = express.Router();
-var debug = require('debug')('api:Serve');
 
 module.exports = function(db) {
   var postsManager = require('../models/posts')(db);
@@ -36,8 +35,16 @@ module.exports = function(db) {
         });
       }
     });
-    
   });
+
+  router.route('/post/comment/:id')
+  // .get(function(req, res, next) {
+
+  // })
+  .post(function(req, res, next) {
+    var id = req.params.id;
+    postsManager.addComment(id, req.body);
+  })
 
   router.route('/post/:id')
   .get(function(req, res, next) {
@@ -51,16 +58,13 @@ module.exports = function(db) {
         res.json(false);
       }
     });
-  }).put(function(req, res, next) {
+  })
+  .put(function(req, res, next) {
     var id = req.params.id;
-    postsManager.updatePost(id, req.body, function(err) {
-      if (err) {
-        res.json(false);
-      } else {
-        res.json(true);
-      }
-    });
-  }).delete(function(req, res, next) {
+    postsManager.updatePost(id, req.body);
+    res.json(true);
+  })
+  .delete(function(req, res, next) {
     var id = req.params.id;
     postsManager.deletePost(id, function(err) {
       if (err) {
@@ -68,7 +72,7 @@ module.exports = function(db) {
       } else {
         res.json(true);
       }
-    })
+    });
   });
 
   router.post('/post', function(req, res, next) {
@@ -80,7 +84,7 @@ module.exports = function(db) {
     try {
       userManager.findUser(req.body.username, req.body.password, function(err, user) {
         if (err) {
-          console.log("出错: ");
+          console.log("信息错误");
           res.json(false);
         } else {
           req.session.user = user;
@@ -97,8 +101,6 @@ module.exports = function(db) {
 
   router.post('/regist', function(req, res, next) {
     var user = req.body;
-    console.log("api/regist: ")
-    console.log(user);
     userManager.checkUser(user)
       .then(userManager.createUser)
       .then(function(){
@@ -114,9 +116,15 @@ module.exports = function(db) {
       });
   });
 
-  router.all('*', function(req, res, next){
-    req.session.user ? next() : res.redirect('/signin');
+  router.get('/signout', function(req, res, next) {
+    delete req.session.user;
+    res.redirect('/login');
   });
+
+  router.all('*', function(req, res, next){
+    req.session.user ? next() : res.redirect('/login');
+  });
+
   return router;
 }
 

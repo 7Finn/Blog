@@ -1,5 +1,4 @@
 var bcrypt = require('bcrypt-nodejs');
-var validator = require('../public/js/validator');
 
 module.exports = function(db) {
 	var users = db.collection('users');

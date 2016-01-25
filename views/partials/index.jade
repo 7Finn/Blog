@@ -1,9 +1,13 @@
-p There are {{posts.length}} posts
+//- p There are {{posts.length}} posts
+a.btn.btn-success.add-post-btn(href="/addPost", role="button") 发布新文章
 div(ng-repeat='post in posts')
   .panel.panel-default
       .panel-heading
         a(href='/readPost/{{post.id}}').panel-title {{post.title}}
-      .panel-body {{post.text}}
+        span.span-left-30 Author: 7Finn
+      .panel-body
+        {{post.text}}
+        a(href='/editPost/{{post.id}}') Edit
       //- a(href='/readPost/{{post.id}}') More
       //- |  - 
       //- a(href='/editPost/{{post.id}}') Edit
