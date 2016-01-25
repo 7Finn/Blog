@@ -15,6 +15,7 @@ function AddPostCtrl($scope, $http, $location) {
     text : '',
     comments : [],
   };
+  $scope.form = {}
   $scope.alertType = true;
   $scope.submitPost = function () {
     if (!($scope.form.title) || !($scope.form.text)) {
@@ -22,7 +23,6 @@ function AddPostCtrl($scope, $http, $location) {
     } else {
       post.title = $scope.form.title;
       post.text = $scope.form.text;
-      console.log(post);
       $http.post('/api/post', post).
       success(function(data) {
         $location.path('/');
@@ -31,7 +31,8 @@ function AddPostCtrl($scope, $http, $location) {
   };
 }
 
-function ReadPostCtrl($scope, $http, $routeParams) {
+function ReadPostCtrl($scope, $http, $location, $routeParams) {
+  $scope.form = {};
   $scope.alertType = true;
   $scope.formType = false;
   $http.get('/api/post/' + $routeParams.id).
@@ -49,7 +50,9 @@ function ReadPostCtrl($scope, $http, $routeParams) {
     } else {
       $http.post('/api/post/comment/' + $routeParams.id, $scope.form).
       success(function(data) {
+        var timestmp = (new Date()).valueOf();
         // $location.url('/readPost/' + $routeParams.id);
+        $location.path('/');
       });
     }
   }

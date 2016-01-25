@@ -37,14 +37,11 @@ module.exports = function(db) {
     });
   });
 
-  router.route('/post/comment/:id')
-  // .get(function(req, res, next) {
-
-  // })
-  .post(function(req, res, next) {
+  router.post('/post/comment/:id', function(req, res, next) {
     var id = req.params.id;
     postsManager.addComment(id, req.body);
-  })
+    res.json(true);
+  });
 
   router.route('/post/:id')
   .get(function(req, res, next) {

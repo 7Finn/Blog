@@ -6,6 +6,8 @@ section
       p Author: 7Finn
       {{post.text}}
   button.btn.btn-success(ng-click="addComment()") Comment
+  a.btn.btn-primary.btn-left-20(href='/editPost/{{post._id}}', type="button") Edit
+  a.btn.btn-danger.btn-left-20(href='/deletePost/{{post._id}}', type="button") Delete
 
 
   form(class="comment-form" ng-class="{true: 'display-block', false: 'display-none'}[formType]")
@@ -23,7 +25,7 @@ section
           .media-left
             img.media-object.img-size(src="img/head.jpg", alt="...")
           .media-body
-            h4.media-heading Comment Test1 {{ comment.author }}
+            h4.media-heading Test author {{ comment.author }}
             | {{ comment.commentText }}...
 
     
