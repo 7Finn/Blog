@@ -10,6 +10,80 @@ function IndexCtrl($scope, $http) {
     });
 }
 
+
+//----------------------------------评论板块----------------------------------------------//
+
+
+
+function EditCommentCtrl($scope, $http, $location, $routeParams) {
+  $scope.form = {};
+  $scope.alertType = true;
+  $http.get('/api/comment/' + $routeParams.id).
+    success(function(data) {
+      $scope.form.text = data.comment.commentText;
+    });
+
+  $scope.editComment = function () {
+    if (!($scope.form.text)) {
+      $scope.alertType = false;
+    } else {
+      $http.put('/api/comment/' + $routeParams.id, $scope.form).
+      success(function(data) {
+        if (data == "false") $location.path('/');
+        else $location.url('/readPost/' + data.postid);
+      });
+    }
+  };
+}
+
+function DeleteCommentCtrl($scope, $http, $location, $routeParams) {
+
+  $http.get('/api/comment/' + $routeParams.id).
+    success(function(data) {
+      $scope.commentText = data.comment.commentText;
+    });
+
+  $scope.deleteComment = function () {
+    $http.delete('/api/comment/' + $routeParams.id).
+      success(function(data) {
+        if (data == "false") $location.path('/');
+        else $location.url('/readPost/' + data.postid);
+      });
+  };
+
+  $scope.home = function () {
+    $http.get('/api/comment/postid/' + $routeParams.id).
+      success(function(data) {
+        $location.url('/readPost/' + data.postid);
+      })
+  };
+}
+
+function HideCommentCtrl($scope, $http, $location, $routeParams) {
+  $http.get('/api/comment/' + $routeParams.id).
+    success(function(data) {
+      $scope.commentText = data.comment.commentText;
+    });
+
+  $scope.hideComment = function () {
+    $http.put('/api/comment/hide/' + $routeParams.id, false).
+      success(function(data) {
+        if (data == "false") $location.url('/');
+        else $location.url('/readPost/' + data.postid);
+      });
+  };
+
+  $scope.home = function () {
+    $http.get('/api/comment/postid/' + $routeParams.id).
+      success(function(data) {
+        $location.url('/readPost/' + data.postid);
+      })
+  };
+}
+
+//----------------------------------文章板块----------------------------------------------//
+
+
 function AddPostCtrl($scope, $http, $location) {
   var post = {
     title : '',
@@ -47,13 +121,16 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
   $scope.permissionHide = false;
   $http.get('/api/post/' + $routeParams.id).
     success(function(data) {
-      $scope.post = data.post;
-      $scope.comments = data.comments;
-      $scope.permissionComment = data.permissionComment;
-      $scope.permissionEdit = data.permissionEdit;
-      $scope.permissionHide = data.permissionHide;
+      if (data == "false") {
+        $location.path('/login');
+      } else {
+        $scope.post = data.post;
+        $scope.comments = data.comments;
+        $scope.permissionComment = data.permissionComment;
+        $scope.permissionEdit = data.permissionEdit;
+        $scope.permissionHide = data.permissionHide;
+      }
     });
-
   $scope.addComment = function () {
     $scope.formType = ($scope.formType == true) ? false : true;
   };
@@ -64,74 +141,17 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
     } else {
       $http.post('/api/post/comment/' + $routeParams.id, $scope.form).
       success(function(data) {
-        $scope.formType = false;
-        $scope.form.commentText = '';
-        $scope.comments.push(data.comment);
+        if (data == "false") {
+          $location.path('/');
+        } else {
+          $scope.formType = false;
+          $scope.form.commentText = '';
+          $scope.comments.push(data.comment);
+        }
       });
     }
   };
 }
-
-function EditCommentCtrl($scope, $http, $location, $routeParams) {
-  $scope.form = {};
-  $scope.alertType = true;
-  $http.get('/api/comment/' + $routeParams.id).
-    success(function(data) {
-      $scope.form.text = data.comment.commentText;
-    });
-
-  $scope.editComment = function () {
-    if (!($scope.form.text)) {
-      $scope.alertType = false;
-    } else {
-      $http.put('/api/comment/' + $routeParams.id, $scope.form).
-      success(function(data) {
-        $location.url('/readPost/' + data.postid);
-      });
-    }
-  };
-}
-
-function DeleteCommentCtrl($scope, $http, $location, $routeParams) {
-
-  $http.get('/api/comment/' + $routeParams.id).
-    success(function(data) {
-      $scope.commentText = data.comment.commentText;
-    });
-
-  $scope.deleteComment = function () {
-    $http.delete('/api/comment/' + $routeParams.id).
-      success(function(data) {
-        $location.url('/readPost/' + data.postid);
-      });
-  };
-
-  $scope.home = function () {
-    $http.get('/api/comment/postid/' + $routeParams.id).
-      success(function(data) {
-        $location.url('/readPost/' + data.postid);
-      })
-  };
-}
-
-function HideCommentCtrl($scope, $http, $location, $routeParams) {
-  $http.get('/api/comment/' + $routeParams.id).
-    success(function(data) {
-      $scope.commentText = data.comment.commentText;
-    });
-
-  $scope.hideComment = function () {
-    $http.put('/api/comment/hide/' + $routeParams.id, false).
-      success(function(data) {
-        if (data != "false") $location.url('/readPost/' + data.postid);
-      });
-  };
-
-  $scope.home = function () {
-    $location.url('/readPost/' + $routeParams.id);
-  };
-}
-
 
 function EditPostCtrl($scope, $http, $location, $routeParams) {
   $scope.form = {};
@@ -147,7 +167,8 @@ function EditPostCtrl($scope, $http, $location, $routeParams) {
     } else {
       $http.put('/api/post/' + $routeParams.id, $scope.form).
       success(function(data) {
-        $location.url('/readPost/' + $routeParams.id);
+        if (data == "false") $location.url('/');
+        else $location.url('/readPost/' + $routeParams.id);
       });
     }
   };
@@ -162,7 +183,8 @@ function DeletePostCtrl($scope, $http, $location, $routeParams) {
   $scope.deletePost = function () {
     $http.delete('/api/post/' + $routeParams.id).
       success(function(data) {
-        $location.url('/');
+        if (data == "false") $location.url('/');
+        else $location.url('/');
       });
   };
 
@@ -181,6 +203,7 @@ function HidePostCtrl($scope, $http, $location, $routeParams) {
     $http.put('/api/post/hide/' + $routeParams.id, false).
       success(function(data) {
         if (data == "true") $location.url('/readPost/' + $routeParams.id);
+        else $location.url('/');
       });
   };
 
@@ -249,7 +272,11 @@ function RegistCtrl($scope, $http, $location) {
     } else {
       $http.post('/api/regist', $scope.form).
       success(function(data) {
-        $location.path('/login');
+        if (data == "true") $location.path('/login');
+        else {
+          $scope.warning = data.warning;
+          $scope.alertType = false;
+        } 
       });
     }
   };

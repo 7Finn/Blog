@@ -7,7 +7,7 @@ module.exports = function(db) {
         findUser: function(username, password, callback) {
             users.findOne({username: username}, function(err, doc) {
             	if (doc == null) {
-            		callback("用户不存在", doc);
+            		callback("用户不存在。", doc);
             	} else {
             		bcrypt.compare(password, doc.password, function(err, res) {
             			if (res) callback(null, doc);
@@ -28,7 +28,7 @@ module.exports = function(db) {
         },
 
         checkUser: function(user) {
-            var errorMessage ="用户名已被注册";
+            var errorMessage ="用户名已被注册。";
             console.log("checkUser : ");
             console.log(user);
             return new Promise(function(resolve, reject) {

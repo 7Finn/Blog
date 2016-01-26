@@ -13,73 +13,80 @@ module.exports = function(db) {
   var userManager = require('../models/users')(db);
   var commentsManager = require('../models/comments')(db);
 
+  function checkRight(username, req, res, next) {
+    if (!req.session.user) res.json(false)
+    else if (res.session.user.username != username && res.session.user.username != "admin@finn.com") res.json(false);
+  }
+
   router.get('/user', function(req, res) {
-      if (req.session.user) {
-          res.json({
-              username : req.session.user.username
-          })
-      } else {
-          res.json({
-              username : ''
-          })
-      }
+    if (req.session.user) {
+        res.json({
+            username : req.session.user.username
+        })
+    } else {
+        res.json({
+            username : ''
+        })
+    }
   });
 
   router.get('/posts', function(req, res, next) {
     var posts = [];
     postsManager.showAllPosts(function(err, data) {
-      if (err) {
-        //err
-      } else {
-        data.forEach(function (post, i) {
-          var subText = post.text;
-          if (post.hide == true) subText = "#该内容已被管理员隐藏#";
-          if (post.text.length > 200) subText = subText.substr(0, 200) + '...';
-          posts.push({
-            id: post._id,
-            author : post.author,
-            title: post.title,
-            text: subText,
-            hide: post.hide,
-          });
-        }
-        , function(err) {
-          res.json({
-            posts: posts
-          });
+      data.forEach(function (post, i) {
+        var subText = post.text;
+        if (post.hide == true) subText = "#该内容已被管理员隐藏#";
+        if (post.text.length > 200) subText = subText.substr(0, 200) + '...';
+        posts.push({
+          id: post._id,
+          author : post.author,
+          title: post.title,
+          text: subText,
+          hide: post.hide,
         });
-      }
+      }, function(err) {
+        res.json({
+          posts: posts
+        });
+      });
     });
   });
 
   router.post('/post/comment/:id', function(req, res, next) {
-    var id = req.params.id;
-    var comment = {
-      postid : id,
-      author : req.session.user.username,
-      commentText : req.body.commentText,
-      hide : false,
-    }
-    commentsManager.addComment(comment, function(err, doc) {
-      var permission1 = false;
-      var permission2 = false;
-      if (req.session.user.username == "admin@finn.com") {
-        permission1 = true;
-        permission2 = true;
-      } else if (req.session.user.username == comment.author) permission1 = true;
-      var tempComment = {
-        _id : doc._id,
-        postid : doc.postid,
-        author : doc.author,
-        commentText : doc.commentText,
-        hide : doc.hide,
-        permissionEdit : permission1,
-        permissionHide : permission2,
+    if (!req.session.user) res.json(false);
+    else {
+      var id = req.params.id;
+      var comment = {
+        postid : id,
+        author : req.session.user.username,
+        commentText : req.body.commentText,
+        hide : false,
       }
-      res.json({
-        comment : tempComment
+      commentsManager.addComment(comment, function(err, doc) {
+        var permission1 = false;
+        var permission2 = false;
+        if (req.session.user) {
+          if (req.session.user.username == "admin@finn.com") {
+            permission1 = true;
+            permission2 = true;
+          } else if (req.session.user.username == comment.author) permission1 = true;
+          var tempComment = {
+            _id : doc._id,
+            postid : doc.postid,
+            author : doc.author,
+            commentText : doc.commentText,
+            hide : doc.hide,
+            permissionEdit : permission1,
+            permissionHide : permission2,
+          }
+          res.json({
+            comment : tempComment
+          });
+        } else {
+          res.json(false);
+        }
       });
-    });
+    }
   });
 
   router.route('/comment/:id')
@@ -94,34 +101,40 @@ module.exports = function(db) {
   .put(function(req, res, next) {
     var id = req.params.id;
     if (!req.session.user) res.json(false);
-    commentsManager.getComment(id, function(err, data) {
-      if (data && (req.session.user.username == data.author 
-        || req.session.user.username == "admin@finn.com")) {
-        commentsManager.updateComment(id, req.body, function(err, doc) {
-          res.json({
-            postid : doc
-          })
-        });
-      } else {
-        res.json(false);
-      }
-    });
+    else {
+      commentsManager.getComment(id, function(err, data) {
+        if (data && (req.session.user.username == data.author 
+          || req.session.user.username == "admin@finn.com")) {
+          commentsManager.updateComment(id, req.body, function(err, doc) {
+            res.json({
+              postid : doc
+            })
+          });
+        } else {
+          res.json(false);
+        }
+      });
+    }
+
   })
   .delete(function(req, res, next) {
     var id = req.params.id;
     if (!req.session.user) res.json(false);
-    commentsManager.getComment(id, function(err, data) {
-      if (data && (req.session.user.username == data.author 
-        || req.session.user.username == "admin@finn.com")) {
-        commentsManager.deleteComment(id, function(err, doc) {
-          res.json({
-            postid : doc
-          })
-        });
-      } else {
-        res.json(false);
-      }
-    });
+    else {
+      commentsManager.getComment(id, function(err, data) {
+        if (data && (req.session.user.username == data.author 
+          || req.session.user.username == "admin@finn.com")) {
+          commentsManager.deleteComment(id, function(err, doc) {
+            res.json({
+              postid : doc
+            })
+          });
+        } else {
+          res.json(false);
+        }
+      });
+    }
+
   })
 
   router.get('/comment/postid/:id', function(req, res, next) {
@@ -135,22 +148,27 @@ module.exports = function(db) {
   })
 
   router.put('/comment/hide/:id', function(req, res, next) {
-    if (req.session.user.username != "admin@finn.com") res.json(false);
-    var id = req.params.id;
-    console.log('/comment/hide/:' + id);
-    commentsManager.hideComment(id, function(err, doc) {
-      res.json({
-        postid : doc
-      })
-    });
+    if (!req.session.user) res.json(false);
+    else if (req.session.user.username != "admin@finn.com") res.json(false);
+    else {
+      var id = req.params.id;
+      console.log('/comment/hide/:' + id);
+      commentsManager.hideComment(id, function(err, doc) {
+        res.json({
+          postid : doc
+        })
+      });
+    }
   });
 
   router.put('/post/hide/:id', function(req, res, next) {
     if (req.session.user.username != "admin@finn.com") res.json(false);
-    var id = req.params.id;
-    console.log("/post/hide/:" + id);
-    postsManager.hidePost(id);
-    res.json(true);
+    else {
+      var id = req.params.id;
+      console.log("/post/hide/:" + id);
+      postsManager.hidePost(id);
+      res.json(true);
+    }
   });
 
   router.route('/post/:id')
@@ -174,7 +192,10 @@ module.exports = function(db) {
             var subText = comment.commentText;
             var permission1 = false;
             var permission2 = false;
-            if (req.session.user.username == "admin@finn.com") {
+            if (!req.session.user) {
+              permission1 = false;
+              permission2 = false;
+            } else if (req.session.user.username == "admin@finn.com") {
               permission1 = true;
               permission2 = true;
             } else if (req.session.user.username == comment.author) permission1 = true;
@@ -208,29 +229,34 @@ module.exports = function(db) {
   .put(function(req, res, next) {
     var id = req.params.id;
     if (!req.session.user) res.json(false);
-    postsManager.findPost(id, function(err, data) {
-      if (data && (req.session.user.username == data.author 
-        || req.session.user.username == "admin@finn.com")) {
-        postsManager.updatePost(id, req.body);
-        res.json(true);
-      } else {
-        res.json(false);
-      }
-    });
+    else {
+      postsManager.findPost(id, function(err, data) {
+        if (data && (req.session.user.username == data.author 
+          || req.session.user.username == "admin@finn.com")) {
+          postsManager.updatePost(id, req.body);
+          res.json(true);
+        } else {
+          res.json(false);
+        }
+      });
+    }
+
   })
   .delete(function(req, res, next) {
     var id = req.params.id;
     if (!req.session.user) res.json(false);
-    postsManager.findPost(id, function(err, data) {
-      if (data && (req.session.user.username == data.author 
-        || req.session.user.username == "admin@finn.com")) {
-        postsManager.deletePost(id);
-        commentsManager.deleteComments(id);
-        res.json(true);
-      } else {
-        res.json(false);
-      }
-    });
+    else {
+      postsManager.findPost(id, function(err, data) {
+        if (data && (req.session.user.username == data.author 
+          || req.session.user.username == "admin@finn.com")) {
+          postsManager.deletePost(id);
+          commentsManager.deleteComments(id);
+          res.json(true);
+        } else {
+          res.json(false);
+        }
+      });
+    }
   });
 
 
@@ -240,6 +266,7 @@ module.exports = function(db) {
     else res.json(true);
   })
   .post(function(req, res, next) {
+    if (!req.session.user) res.json(false);
     var post = {
       author : req.session.user.username,
       title : req.body.title,
@@ -275,7 +302,6 @@ module.exports = function(db) {
       .then(userManager.createUser)
       .then(function(){
         req.session.user = user;
-        debug("User session", user);
         res.json(true);
       })
       .catch(function(error){
