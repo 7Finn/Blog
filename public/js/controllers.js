@@ -55,7 +55,7 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
     });
 
   $scope.addComment = function () {
-    $scope.formType = true;
+    $scope.formType = ($scope.formType == true) ? false : true;
   };
 
   $scope.submitComment = function () {
@@ -64,6 +64,8 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
     } else {
       $http.post('/api/post/comment/' + $routeParams.id, $scope.form).
       success(function(data) {
+        $scope.formType = false;
+        $scope.form.commentText = '';
         $scope.comments.push(data.comment);
       });
     }
@@ -91,6 +93,7 @@ function EditCommentCtrl($scope, $http, $location, $routeParams) {
 }
 
 function DeleteCommentCtrl($scope, $http, $location, $routeParams) {
+
   $http.get('/api/comment/' + $routeParams.id).
     success(function(data) {
       $scope.commentText = data.comment.commentText;
@@ -104,7 +107,10 @@ function DeleteCommentCtrl($scope, $http, $location, $routeParams) {
   };
 
   $scope.home = function () {
-    $location.url('/');
+    $http.get('/api/comment/postid/' + $routeParams.id).
+      success(function(data) {
+        $location.url('/readPost/' + data.postid);
+      })
   };
 }
 

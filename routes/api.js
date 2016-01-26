@@ -57,9 +57,11 @@ module.exports = function(db) {
       author : req.session.user.username,
       commentText : req.body.commentText,
     }
-    commentsManager.addComment(comment);
-    res.json({
-      comment : comment
+    commentsManager.addComment(comment, function(err, doc) {
+      console.log(doc);
+      res.json({
+        comment : doc
+      });
     });
   });
 
@@ -105,6 +107,16 @@ module.exports = function(db) {
     });
   })
 
+  router.get('/comment/postid/:id', function(req, res, next) {
+    var id = req.params.id;
+    commentsManager.getPostId(id)
+    .then(function(postid){
+      res.json({
+        postid: postid
+      })
+    });
+  })
+
   router.put('/comment/hide/:id', function(req, res, next) {
     if (req.session.user.username != "admin@finn.com") res.json(false);
     var id = req.params.id;
@@ -143,7 +155,7 @@ module.exports = function(db) {
             var subText = comment.commentText;
             if (comment.commentText.length > 50) subText = subText.substr(0, 50) + '...';
             comments.push({
-              id: comment._id,
+              _id: comment._id,
               postid : comment.postid,
               author : comment.author,
               commentText: subText,

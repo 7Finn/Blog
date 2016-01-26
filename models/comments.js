@@ -4,8 +4,10 @@ module.exports = function(db) {
     var ObjectID = require('mongodb').ObjectID;
 
 	return {
-        addComment : function(comment) {
-            comments.insert(comment);
+        addComment : function(comment, callback) {
+            comments.insert(comment, function(err, doc) {
+                callback(err, comment);
+            });
         },
         getComments : function(postid, callback) {
             comments.find({postid : postid}, function(err, doc) {
@@ -17,10 +19,10 @@ module.exports = function(db) {
                 callback(err, doc);
             })
         },
-        getPostId : function(id, callback) {
-            comments.findOne({_id: ObjectID(id)}, function(err, doc) {
-                callback(err, doc.postid);
-            })
+        getPostId : function(id) {
+            return comments.findOne({_id: ObjectID(id)}).then(function(data) {
+                return data.postid;
+            });
         },
         updateComment : function(id, data, callback) {
             comments.updateOne({_id: ObjectID(id)}, {$set:{commentText:data.text}});
