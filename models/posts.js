@@ -23,14 +23,8 @@ module.exports = function(db) {
         updatePost: function(id, data) {
             posts.updateOne({_id:ObjectID(id)}, {$set:{title:data.title, text:data.text}});
         },
-        addComment : function(postid, comment) {
-            posts.findOne({_id:ObjectID(postid)}, function(err, doc) {
-                doc.comments.push(comment);
-                posts.updateOne({_id:ObjectID(postid)}, {$set:{comments : doc.comments}});
-            });
-        },
         hidePost: function(id) {
-            posts.updateOne({_id:ObjectID(id)}, {$set:{text: "#该内容已被管理员隐藏#"}});
+            posts.updateOne({_id:ObjectID(id)}, {$set:{text: "#该内容已被管理员隐藏#", hide : true}});
         },
     }
 };

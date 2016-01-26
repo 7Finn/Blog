@@ -28,6 +28,18 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
         templateUrl: 'partials/hidePost',
         controller: HidePostCtrl
       }).
+      when('/editComment/:id', {
+        templateUrl: 'partials/editComment',
+        controller: EditCommentCtrl
+      }).
+      when('/deleteComment/:id', {
+        templateUrl: 'partials/deleteComment',
+        controller: DeleteCommentCtrl
+      }).
+      when('/hideComment/:id', {
+        templateUrl: 'partials/hideComment',
+        controller: HideCommentCtrl
+      }).
       when('/login', {
         templateUrl: 'partials/login',
         controller: LoginCtrl

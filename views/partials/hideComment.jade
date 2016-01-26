@@ -1,0 +1,6 @@
+.panel.panel-default
+      .panel-body {{commentText}}
+
+.alert.alert-danger(role="alert") 确定要隐藏此评论吗？评论隐藏后显示“该内容已被管理员隐藏”
+button.btn.btn-danger(type="button", ng-click='hideComment()') 是的
+button.btn.btn-warning.btn-left-20(type="button", ng-click='home()') 不了
