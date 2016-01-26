@@ -24,6 +24,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
         templateUrl: 'partials/deletePost',
         controller: DeletePostCtrl
       }).
+      when('/hidePost/:id', {
+        templateUrl: 'partials/hidePost',
+        controller: HidePostCtrl
+      }).
       when('/login', {
         templateUrl: 'partials/login',
         controller: LoginCtrl

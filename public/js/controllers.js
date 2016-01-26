@@ -14,6 +14,7 @@ function AddPostCtrl($scope, $http, $location) {
   var post = {
     title : '',
     text : '',
+    hide : false,
     comments : [],
   };
   $scope.form = {}
@@ -38,16 +39,18 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
   $scope.formType = false;
   $scope.permissionComment = false;
   $scope.permissionEdit = false;
+  $scope.permissionHide = false;
   $http.get('/api/post/' + $routeParams.id).
     success(function(data) {
       $scope.post = data.post;
       $scope.permissionComment = data.permissionComment;
       $scope.permissionEdit = data.permissionEdit;
+      $scope.permissionHide = data.permissionHide;
     });
 
   $scope.addComment = function () {
     $scope.formType = true;
-  }
+  };
 
   $scope.submitComment = function () {
     if (!($scope.form.commentText)) {
@@ -60,7 +63,7 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
         $location.path('/');
       });
     }
-  }
+  };
 }
 
 function EditPostCtrl($scope, $http, $location, $routeParams) {
@@ -120,7 +123,7 @@ function LoginCtrl($scope, $http, $rootScope, $location) {
         } else {
           $rootScope.currentUsername = data.username;
           $rootScope.signAdress = '/logout';
-          $rootScope.sign = "Logout";
+          $rootScope.sign = "退出账号";
           $location.path('/');
         }
       })
@@ -134,8 +137,8 @@ function LogoutCtrl($scope, $http, $rootScope, $location) {
       success(function(data) {
         $rootScope.currentUsername = '';
         $rootScope.signAdress = '/login';
-        $rootScope.sign = "Login";
-        $location.url('/api/login');
+        $rootScope.sign = "登录";
+        $location.path('/login');
       });
   };
 
@@ -167,6 +170,23 @@ function RegistCtrl($scope, $http, $location) {
   };
 }
 
+function HidePostCtrl($scope, $http, $location, $routeParams) {
+  $http.get('/api/post/' + $routeParams.id).
+    success(function(data) {
+      $scope.post = data.post;
+    });
+
+  $scope.hidePost = function () {
+    $http.put('/api/post/hide/' + $routeParams.id, false).
+      success(function(data) {
+        $location.url('/readPost/' + $routeParams.id);
+      });
+  };
+
+  $scope.home = function () {
+    $location.url('/readPost/' + $routeParams.id);
+  };
+}
 
 function navCtrl($scope, $rootScope, $http) {
   $rootScope.currentUsername = '';
@@ -177,10 +197,10 @@ function navCtrl($scope, $rootScope, $http) {
     if (data.username != '') {
       $rootScope.currentUsername = data.username;
       $rootScope.signAdress = '/logout';
-      $rootScope.sign = "Logout";
+      $rootScope.sign = "退出账号";
     } else {
       $rootScope.signAdress = '/login';
-      $rootScope.sign = "Login";
+      $rootScope.sign = "登录";
     }
   });
 }

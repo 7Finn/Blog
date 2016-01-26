@@ -8,6 +8,6 @@ div(ng-repeat='post in posts | filter : {title : key}')
   .panel.panel-default
     .panel-heading
       a(href='/readPost/{{post.id}}').panel-title {{post.title}}
-      span.span-left-30 Author: {{post.author}}
+      span.span-left-30 作者: {{post.author}}
     .panel-body
       {{post.text}}

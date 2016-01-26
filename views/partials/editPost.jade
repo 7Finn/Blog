@@ -1,11 +1,11 @@
 form
   .form-group
-    label(for="title") Title
+    label(for="title") 标题
     input.form-control(ng-model='form.title', name='title')
   .form-group
-    label(for="exampleInputPassword1") Body
+    label(for="exampleInputPassword1") 文本
     textarea.form-control(ng-model='form.text', cols='50', rows='15')
   .cow
-    div(class="alert alert-danger" ng-class="{true: 'display-none', false: 'display-block'}[alertType]" , role="alert") Text content can not be empty
-    button.btn.btn-success(ng-click='editPost()') Submit
+    div(class="alert alert-danger" ng-class="{true: 'display-none', false: 'display-block'}[alertType]" , role="alert") 文本内容不可空
+    button.btn.btn-success(ng-click='editPost()') 提交修改
     

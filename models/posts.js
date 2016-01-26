@@ -29,6 +29,9 @@ module.exports = function(db) {
                 posts.updateOne({_id:ObjectID(postid)}, {$set:{comments : doc.comments}});
             });
         },
+        hidePost: function(id) {
+            posts.updateOne({_id:ObjectID(id)}, {$set:{text: "#该内容已被管理员隐藏#"}});
+        },
     }
 };
 

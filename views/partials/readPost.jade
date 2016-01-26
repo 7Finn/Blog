@@ -7,20 +7,22 @@ section
       {{post.text}}
   button(class="btn btn-success",
     ng-class="{true: 'display-inline', false: 'display-none'}[permissionComment]",
-    ng-click="addComment()") Comment
+    ng-click="addComment()") 评论
   a(class="btn btn-primary btn-left-20", href='/editPost/{{post._id}}',
-    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button") Edit
+    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button") 编辑文章
   a(class="btn btn-danger btn-left-20", href='/deletePost/{{post._id}}',
-    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button") Delete
+    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button") 删除文章
+  a(class="btn btn-default btn-left-20", href='/hidePost/{{post._id}}',
+    ng-class="{true: 'display-inline', false: 'display-none'}[permissionHide]", type="button") 隐藏文章
 
 
   form(class="comment-form" ng-class="{true: 'display-block', false: 'display-none'}[formType]")
     .form-group
-      label Comment text
+      label 评论文本框
       textarea.form-control(ng-model='form.commentText', cols='50', rows='3')
     .cow
-      div(class="alert alert-danger" ng-class="{true: 'display-none', false: 'display-block'}[alertType]" ,   role="alert") Text content can not be empty
-      button.btn.btn-success(ng-click='submitComment()', type="submit") Submit
+      div(class="alert alert-danger" ng-class="{true: 'display-none', false: 'display-block'}[alertType]" ,   role="alert") 文本内容不可空
+      button.btn.btn-success(ng-click='submitComment()', type="submit") 提交
   
   div(ng-repeat='comment in post.comments')
     .panel.panel-default.comment-panel

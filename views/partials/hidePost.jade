@@ -3,6 +3,6 @@
         .panel-title {{post.title}}
       .panel-body {{post.text}}
 
-.alert.alert-danger(role="alert") 确定要删除此文章吗？
-button.btn.btn-danger(type="button", ng-click='deletePost()') 是的
+.alert.alert-danger(role="alert") 确定要隐藏此文章吗？文章隐藏后显示“内容被管理员隐藏”
+button.btn.btn-danger(type="button", ng-click='hidePost()') 是的
 button.btn.btn-warning.btn-left-20(type="button", ng-click='home()') 不了

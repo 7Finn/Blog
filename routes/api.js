@@ -12,10 +12,6 @@ module.exports = function(db) {
   var postsManager = require('../models/posts')(db);
   var userManager = require('../models/users')(db);
 
-
-  // router.all('*', function(req, res, next){
-  //   req.session.user ? next() : res.redirect('/login');
-  // });
   router.get('/user', function(req, res) {
       if (req.session.user) {
           res.json({
@@ -35,11 +31,13 @@ module.exports = function(db) {
         //err
       } else {
         data.forEach(function (post, i) {
+          var subText = post.text;
+          if (post.text.length > 50) subText = subText.substr(0, 50) + '...';
           posts.push({
             id: post._id,
             author : post.author,
             title: post.title,
-            text: post.text.substr(0, 50) + '...'
+            text: subText,
           });
         }
         , function(err) {
@@ -61,6 +59,13 @@ module.exports = function(db) {
     res.json(true);
   });
 
+  router.put('/post/hide/:id', function(req, res, next) {
+    var id = req.params.id;
+    console.log("/post/hide/:" + id);
+    postsManager.hidePost(id);
+    res.json(true);
+  })
+
   router.route('/post/:id')
   .get(function(req, res, next) {
     var id = req.params.id;
@@ -68,13 +73,17 @@ module.exports = function(db) {
       if (data) {
         var permissionComment = true;
         var permissionEdit = false;
+        var permissionHide = false;
         if (!req.session.user) permissionComment = false;
-        else if (req.session.user.username == data.author 
-                || req.session.user.username == "admin@finn.com") permissionEdit = true;
+        else if (req.session.user.username == "admin@finn.com") {
+          permissionEdit = true;
+          permissionHide = true;
+        } else if (req.session.user.username == data.author) permissionEdit = true;
         res.json({
           post: data,
           permissionComment : permissionComment,
           permissionEdit : permissionEdit,
+          permissionHide : permissionHide,
         });
       } else {
         res.json(false);
@@ -113,6 +122,7 @@ module.exports = function(db) {
       author : req.session.user.username,
       title : req.body.title,
       text : req.body.text,
+      hide : req.body.hide,
       comments : [],
     }
     postsManager.createPost(post);
@@ -137,8 +147,6 @@ module.exports = function(db) {
         res.json(false);
       };
   });
-
-
 
   router.post('/regist', function(req, res, next) {
     var user = req.body;
