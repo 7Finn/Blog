@@ -24,7 +24,7 @@ module.exports = function(db) {
             posts.updateOne({_id:ObjectID(id)}, {$set:{title:data.title, text:data.text}});
         },
         hidePost: function(id) {
-            posts.updateOne({_id:ObjectID(id)}, {$set:{text: "#该内容已被管理员隐藏#", hide : true}});
+            posts.updateOne({_id:ObjectID(id)}, {$set:{hide : true}});
         },
     }
 };

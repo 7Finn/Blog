@@ -39,7 +39,7 @@ module.exports = function(db) {
             })
         },
         hideComment : function(id, callback) {
-            comments.updateOne({_id: ObjectID(id)}, {$set:{commentText: "#该内容已被管理员隐藏#"}});
+            comments.updateOne({_id: ObjectID(id)}, {$set:{hide : true}});
             comments.findOne({_id: ObjectID(id)}, function(err, doc) {
                 callback(err, doc.postid);
             })

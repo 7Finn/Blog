@@ -33,12 +33,14 @@ module.exports = function(db) {
       } else {
         data.forEach(function (post, i) {
           var subText = post.text;
-          if (post.text.length > 50) subText = subText.substr(0, 50) + '...';
+          if (post.hide == true) subText = "#该内容已被管理员隐藏#";
+          if (post.text.length > 200) subText = subText.substr(0, 200) + '...';
           posts.push({
             id: post._id,
             author : post.author,
             title: post.title,
             text: subText,
+            hide: post.hide,
           });
         }
         , function(err) {
@@ -56,11 +58,26 @@ module.exports = function(db) {
       postid : id,
       author : req.session.user.username,
       commentText : req.body.commentText,
+      hide : false,
     }
     commentsManager.addComment(comment, function(err, doc) {
-      console.log(doc);
+      var permission1 = false;
+      var permission2 = false;
+      if (req.session.user.username == "admin@finn.com") {
+        permission1 = true;
+        permission2 = true;
+      } else if (req.session.user.username == comment.author) permission1 = true;
+      var tempComment = {
+        _id : doc._id,
+        postid : doc.postid,
+        author : doc.author,
+        commentText : doc.commentText,
+        hide : doc.hide,
+        permissionEdit : permission1,
+        permissionHide : permission2,
+      }
       res.json({
-        comment : doc
+        comment : tempComment
       });
     });
   });
@@ -149,16 +166,28 @@ module.exports = function(db) {
           permissionEdit = true;
           permissionHide = true;
         } else if (req.session.user.username == data.author) permissionEdit = true;
+
+        if (data.hide == true) data.text = "#该内容已被管理员隐藏#";
         var comments = [];
         commentsManager.getComments(id, function(err, commentData) {
           commentData.forEach(function (comment, i) {
             var subText = comment.commentText;
-            if (comment.commentText.length > 50) subText = subText.substr(0, 50) + '...';
+            var permission1 = false;
+            var permission2 = false;
+            if (req.session.user.username == "admin@finn.com") {
+              permission1 = true;
+              permission2 = true;
+            } else if (req.session.user.username == comment.author) permission1 = true;
+            if (comment.hide == true) subText = "#该内容已被管理员隐藏#"
+            // if (comment.commentText.length > 50) subText = subText.substr(0, 50) + '...';
             comments.push({
               _id: comment._id,
               postid : comment.postid,
               author : comment.author,
               commentText: subText,
+              hide : comment.hide,
+              permissionEdit : permission1,
+              permissionHide : permission2,
             });
           }
           , function(err) {
