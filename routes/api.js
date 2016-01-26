@@ -58,7 +58,9 @@ module.exports = function(db) {
       commentText : req.body.commentText,
     }
     commentsManager.addComment(comment);
-    res.json(true);
+    res.json({
+      comment : comment
+    });
   });
 
   router.route('/comment/:id')
@@ -182,6 +184,7 @@ module.exports = function(db) {
       if (data && (req.session.user.username == data.author 
         || req.session.user.username == "admin@finn.com")) {
         postsManager.deletePost(id);
+        commentsManager.deleteComments(id);
         res.json(true);
       } else {
         res.json(false);
@@ -189,7 +192,13 @@ module.exports = function(db) {
     });
   });
 
-  router.post('/post', function(req, res, next) {
+
+  router.route('/post')
+  .get(function(req, res, next) {
+    if (!req.session.user) res.json(false);
+    else res.json(true);
+  })
+  .post(function(req, res, next) {
     var post = {
       author : req.session.user.username,
       title : req.body.title,

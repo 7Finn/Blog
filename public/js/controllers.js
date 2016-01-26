@@ -19,6 +19,11 @@ function AddPostCtrl($scope, $http, $location) {
   };
   $scope.form = {}
   $scope.alertType = true;
+  $http.get('/api/post').
+    success(function(data) {
+      if (data == "false") $location.path('/login');
+    })
+
   $scope.submitPost = function () {
     if (!($scope.form.title) || !($scope.form.text)) {
       $scope.alertType = false;
@@ -59,9 +64,7 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
     } else {
       $http.post('/api/post/comment/' + $routeParams.id, $scope.form).
       success(function(data) {
-        // var timestmp = (new Date()).valueOf();
-        // $location.url('/readPost/' + $routeParams.id);
-        $location.path('/');
+        $scope.comments.push(data.comment);
       });
     }
   };

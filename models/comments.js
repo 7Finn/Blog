@@ -41,7 +41,10 @@ module.exports = function(db) {
             comments.findOne({_id: ObjectID(id)}, function(err, doc) {
                 callback(err, doc.postid);
             })
-        }
+        },
+        deleteComments : function(postid) {
+            comments.remove({postid : postid});
+        },
     }
 };
 
