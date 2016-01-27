@@ -32,11 +32,12 @@ module.exports = function(db) {
 
   router.get('/posts', function(req, res, next) {
     var posts = [];
-    postsManager.showAllPosts(function(err, data) {
+    postsManager.showAllPosts()
+    .then(function(data) {
       data.forEach(function (post, i) {
         var subText = post.text;
         if (post.hide == true) subText = "#该内容已被管理员隐藏#";
-        if (post.text.length > 200) subText = subText.substr(0, 200) + '...';
+        else if (post.text.length > 200) subText = subText.substr(0, 200) + '...';
         posts.push({
           id: post._id,
           author : post.author,
@@ -49,6 +50,9 @@ module.exports = function(db) {
           posts: posts
         });
       });
+    })
+    .catch(function(error) {
+      console.log("ERROR: " + error);
     });
   });
 
@@ -62,7 +66,8 @@ module.exports = function(db) {
         commentText : req.body.commentText,
         hide : false,
       }
-      commentsManager.addComment(comment, function(err, doc) {
+      commentsManager.addComment(comment)
+      .then(function(doc) {
         var permission1 = false;
         var permission2 = false;
         if (req.session.user) {
@@ -92,7 +97,8 @@ module.exports = function(db) {
   router.route('/comment/:id')
   .get(function(req, res, next) {
     var id = req.params.id;
-    commentsManager.getComment(id, function(err, data) {
+    commentsManager.getComment(id)
+    .then(function(data) {
       res.json({
         comment : data
       })
@@ -102,12 +108,14 @@ module.exports = function(db) {
     var id = req.params.id;
     if (!req.session.user) res.json(false);
     else {
-      commentsManager.getComment(id, function(err, data) {
+      commentsManager.getComment(id)
+      .then(function(data) {
         if (data && (req.session.user.username == data.author 
           || req.session.user.username == "admin@finn.com")) {
-          commentsManager.updateComment(id, req.body, function(err, doc) {
+          commentsManager.updateComment(id, req.body)
+          .then(function(data) {
             res.json({
-              postid : doc
+              postid : data
             })
           });
         } else {
@@ -121,12 +129,14 @@ module.exports = function(db) {
     var id = req.params.id;
     if (!req.session.user) res.json(false);
     else {
-      commentsManager.getComment(id, function(err, data) {
+      commentsManager.getComment(id)
+      .then(function(data) {
         if (data && (req.session.user.username == data.author 
           || req.session.user.username == "admin@finn.com")) {
-          commentsManager.deleteComment(id, function(err, doc) {
+          commentsManager.deleteComment(id)
+          .then(function(data) {
             res.json({
-              postid : doc
+              postid : data
             })
           });
         } else {
@@ -153,9 +163,10 @@ module.exports = function(db) {
     else {
       var id = req.params.id;
       console.log('/comment/hide/:' + id);
-      commentsManager.hideComment(id, function(err, doc) {
+      commentsManager.hideComment(id)
+      .then(function(data) {
         res.json({
-          postid : doc
+          postid : data
         })
       });
     }
@@ -177,7 +188,8 @@ module.exports = function(db) {
     var permissionComment = true;
     var permissionEdit = false;
     var permissionHide = false;
-    postsManager.findPost(id, function(err, data) {
+    postsManager.findPost(id)
+    .then(function(data) {
       if (data) {
         if (!req.session.user) permissionComment = false;
         else if (req.session.user.username == "admin@finn.com") {
@@ -187,7 +199,8 @@ module.exports = function(db) {
 
         if (data.hide == true) data.text = "#该内容已被管理员隐藏#";
         var comments = [];
-        commentsManager.getComments(id, function(err, commentData) {
+        commentsManager.getComments(id)
+        .then(function(commentData) {
           commentData.forEach(function (comment, i) {
             var subText = comment.commentText;
             var permission1 = false;
@@ -230,7 +243,8 @@ module.exports = function(db) {
     var id = req.params.id;
     if (!req.session.user) res.json(false);
     else {
-      postsManager.findPost(id, function(err, data) {
+      postsManager.findPost(id)
+      .then(function(data) {
         if (data && (req.session.user.username == data.author 
           || req.session.user.username == "admin@finn.com")) {
           postsManager.updatePost(id, req.body);
@@ -246,7 +260,8 @@ module.exports = function(db) {
     var id = req.params.id;
     if (!req.session.user) res.json(false);
     else {
-      postsManager.findPost(id, function(err, data) {
+      postsManager.findPost(id)
+      .then(function(data) {
         if (data && (req.session.user.username == data.author 
           || req.session.user.username == "admin@finn.com")) {
           postsManager.deletePost(id);
@@ -273,8 +288,10 @@ module.exports = function(db) {
       text : req.body.text,
       hide : req.body.hide,
     }
-    postsManager.createPost(post);
-    res.json(req.body);
+    postsManager.createPost(post)
+    .then(function() {
+      res.json(req.body);
+    })
   });
 
   router.post('/login', function(req, res, next) {

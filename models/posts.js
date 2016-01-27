@@ -5,26 +5,24 @@ module.exports = function(db) {
 
 	return {
         createPost: function(post) {
-            posts.insert(post);
+            return posts.insert(post);
         },
-        showAllPosts: function(callback) {
-            posts.find(function(err, doc) {
-                callback(err, doc);
+        showAllPosts: function() {
+            return new Promise(function(resolve, reject) {
+                resolve(posts.find());
             });
         },
-        findPost: function(id, callback) {
-            posts.findOne({_id:ObjectID(id)}, function(err, doc) {
-                callback(err, doc);
-            });
+        findPost: function(id) {
+            return posts.findOne({_id:ObjectID(id)})
         },
         deletePost: function(id) {
-            posts.remove({_id:ObjectID(id)});
+            return posts.remove({_id:ObjectID(id)});
         },
         updatePost: function(id, data) {
-            posts.updateOne({_id:ObjectID(id)}, {$set:{title:data.title, text:data.text}});
+            return posts.updateOne({_id:ObjectID(id)}, {$set:{title:data.title, text:data.text}});
         },
         hidePost: function(id) {
-            posts.updateOne({_id:ObjectID(id)}, {$set:{hide : true}});
+            return posts.updateOne({_id:ObjectID(id)}, {$set:{hide : true}});
         },
     }
 };
