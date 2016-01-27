@@ -10,6 +10,9 @@ function IndexCtrl($scope, $http) {
     });
 }
 
+function ErrorCtrl($scope, $http) {
+
+}
 
 //----------------------------------评论板块----------------------------------------------//
 
@@ -29,8 +32,8 @@ function EditCommentCtrl($scope, $http, $location, $routeParams) {
     } else {
       $http.put('/api/comment/' + $routeParams.id, $scope.form).
       success(function(data) {
-        if (data == "false") $location.path('/');
-        else $location.url('/readPost/' + data.postid);
+        if (data) $location.url('/readPost/' + data.postid);
+        else $location.url('/error');
       });
     }
   };
@@ -46,8 +49,8 @@ function DeleteCommentCtrl($scope, $http, $location, $routeParams) {
   $scope.deleteComment = function () {
     $http.delete('/api/comment/' + $routeParams.id).
       success(function(data) {
-        if (data == "false") $location.path('/');
-        else $location.url('/readPost/' + data.postid);
+        if (data) $location.url('/readPost/' + data.postid);
+        else $location.url('/error');
       });
   };
 
@@ -66,10 +69,10 @@ function HideCommentCtrl($scope, $http, $location, $routeParams) {
     });
 
   $scope.hideComment = function () {
-    $http.put('/api/comment/hide/' + $routeParams.id, false).
+    $http.put('/api/comment/hide/' + $routeParams.id).
       success(function(data) {
-        if (data == "false") $location.url('/');
-        else $location.url('/readPost/' + data.postid);
+        if (data) $location.url('/readPost/' + data.postid);
+        else $location.url('/error');
       });
   };
 
@@ -95,7 +98,7 @@ function AddPostCtrl($scope, $http, $location) {
   $scope.alertType = true;
   $http.get('/api/post').
     success(function(data) {
-      if (data == "false") $location.path('/login');
+      if (!data) $location.path('/login');
     })
 
   $scope.submitPost = function () {
@@ -121,7 +124,7 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
   $scope.permissionHide = false;
   $http.get('/api/post/' + $routeParams.id).
     success(function(data) {
-      if (data == "false") {
+      if (!data) {
         $location.path('/login');
       } else {
         $scope.post = data.post;
@@ -142,12 +145,12 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
     } else {
       $http.post('/api/post/comment/' + $routeParams.id, $scope.form).
       success(function(data) {
-        if (data == "false") {
-          $location.path('/');
-        } else {
+        if (data) {
           $scope.formType = false;
           $scope.form.commentText = '';
           $scope.comments.push(data.comment);
+        } else {
+          $location.url('/error');
         }
       });
     }
@@ -168,8 +171,8 @@ function EditPostCtrl($scope, $http, $location, $routeParams) {
     } else {
       $http.put('/api/post/' + $routeParams.id, $scope.form).
       success(function(data) {
-        if (data == "false") $location.url('/');
-        else $location.url('/readPost/' + $routeParams.id);
+        if (data) $location.url('/readPost/' + $routeParams.id);
+        else $location.url('/error');
       });
     }
   };
@@ -184,8 +187,8 @@ function DeletePostCtrl($scope, $http, $location, $routeParams) {
   $scope.deletePost = function () {
     $http.delete('/api/post/' + $routeParams.id).
       success(function(data) {
-        if (data == "false") $location.url('/');
-        else $location.url('/');
+        if (data) $location.url('/');
+        else $location.url('/error');
       });
   };
 
@@ -201,10 +204,10 @@ function HidePostCtrl($scope, $http, $location, $routeParams) {
     });
 
   $scope.hidePost = function () {
-    $http.put('/api/post/hide/' + $routeParams.id, false).
+    $http.put('/api/post/hide/' + $routeParams.id).
       success(function(data) {
-        if (data == "true") $location.url('/readPost/' + $routeParams.id);
-        else $location.url('/');
+        if (data) $location.url('/readPost/' + $routeParams.id);
+        else $location.url('/error');
       });
   };
 
@@ -221,19 +224,19 @@ function LoginCtrl($scope, $http, $rootScope, $location) {
   $scope.alertType = true;
   $scope.loginBtn = function () {
     if (!($scope.form.username) || !($scope.form.password)) {
-      $scope.warning = "用户信息不合法。";
+      $scope.warning = "用户信息不可空。";
       $scope.alertType = false;
     } else {
       $http.post('/api/login', $scope.form).
       success(function(data) {
-        if (data == "false") {
-          $scope.warning = "用户信息错误。";
-          $scope.alertType = false;
-        } else {
+        if (data) {
           $rootScope.currentUsername = data.username;
           $rootScope.signAdress = '/logout';
           $rootScope.sign = "退出账号";
           $location.path('/');
+        } else {
+          $scope.warning = "账号或密码错误。";
+          $scope.alertType = false;
         }
       })
     }
@@ -273,7 +276,7 @@ function RegistCtrl($scope, $http, $location) {
     } else {
       $http.post('/api/regist', $scope.form).
       success(function(data) {
-        if (data == "true") $location.path('/login');
+        if (data) $location.path('/login');
         else {
           $scope.warning = data.warning;
           $scope.alertType = false;
@@ -283,7 +286,9 @@ function RegistCtrl($scope, $http, $location) {
   };
 }
 
-function navCtrl($scope, $rootScope, $http) {
+var navCtrl = angular.module('navCtrl', []);
+
+navCtrl.controller('navCtrl', function($scope, $rootScope, $http) {
   $rootScope.currentUsername = '';
   $rootScope.signAdress = '';
   $rootScope.sign = '';
@@ -298,4 +303,4 @@ function navCtrl($scope, $rootScope, $http) {
       $rootScope.sign = "登录";
     }
   });
-}
+})

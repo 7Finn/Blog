@@ -99,6 +99,9 @@ module.exports = function(db) {
     var id = req.params.id;
     commentsManager.getComment(id)
     .then(function(data) {
+      if (data.author != req.session.user.username
+        && req.session.user.username != 'admin@finn.com' 
+        && data.hide) data.commentText = "#该内容已被管理员隐藏#";
       res.json({
         comment : data
       })
@@ -213,7 +216,6 @@ module.exports = function(db) {
               permission2 = true;
             } else if (req.session.user.username == comment.author) permission1 = true;
             if (comment.hide == true) subText = "#该内容已被管理员隐藏#"
-            // if (comment.commentText.length > 50) subText = subText.substr(0, 50) + '...';
             comments.push({
               _id: comment._id,
               postid : comment.postid,

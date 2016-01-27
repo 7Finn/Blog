@@ -1,7 +1,7 @@
 'use strict';
 
 // Declare app level module which depends on filters, and services
-angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives']).
+angular.module('myApp', ['ngRoute', 'navCtrl']).
   config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
     $routeProvider.
       when('/', {
@@ -51,6 +51,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives'])
       when('/logout', {
         templateUrl: 'partials/logout',
         controller: LogoutCtrl
+      }).
+      when('/error', {
+        templateUrl: 'partials/error',
+        controller: ErrorCtrl
       }).
       otherwise({
         redirectTo: '/'
