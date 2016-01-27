@@ -199,10 +199,13 @@ module.exports = function(db) {
       .then(function(data) {
         if (data.author != req.session.user.username
           && req.session.user.username != 'admin@finn.com' 
-          && data.hide) data.text = "#该内容已被管理员隐藏#";
-        res.json({
-          post : data
-        })
+          && data.hide) res.json(false)
+        else {
+          res.json({
+            post : data
+          })
+        }
+        
       })
     } else res.json(false);
   })
