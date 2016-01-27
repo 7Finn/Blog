@@ -55,6 +55,9 @@ textarea {
   margin-bottom: 20px;
 }
 
+.img-head {
+  border-radius: 4px;
+}
 
 .span-left-30 {
   margin-left: 30px;
@@ -62,6 +65,10 @@ textarea {
 
 .btn-left-20 {
   margin-left: 20px;
+}
+
+.span-right-10 {
+  margin-right: 10px;
 }
 
 .img-size {

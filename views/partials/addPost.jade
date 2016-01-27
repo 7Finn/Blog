@@ -7,5 +7,7 @@ form
     textarea.form-control(ng-model='form.text', cols='50', rows='15')
   .cow
     div(class="alert alert-danger" ng-class="{true: 'display-none', false: 'display-block'}[alertType]" , role="alert") 文本内容不可空
-    button.btn.btn-success(ng-click='submitPost()', type="submit") 提交
+    button.btn.btn-success(ng-click='submitPost()', type="submit")
+        span.glyphicon.glyphicon-check.span-right-10
+        span 提交
     

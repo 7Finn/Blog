@@ -8,13 +8,21 @@ section
         span(ng-class="{true: 'text-danger', false: ''}[post.hide]") {{post.text}}
   button(class="btn btn-success",
     ng-class="{true: 'display-inline', false: 'display-none'}[permissionComment]",
-    ng-click="addComment()") 添加评论
+    ng-click="addComment()")
+    span.glyphicon.glyphicon-edit.span-right-10
+    span 添加评论
   a(class="btn btn-primary btn-left-20", href='/editPost/{{post._id}}',
-    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button") 编辑文章
+    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button")
+    span.glyphicon.glyphicon-file.span-right-10
+    span 编辑文章
   a(class="btn btn-danger btn-left-20", href='/deletePost/{{post._id}}',
-    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button") 删除文章
+    ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button")
+    span.glyphicon.glyphicon-trash.span-right-10
+    span 删除文章
   a(class="btn btn-default btn-left-20", href='/hidePost/{{post._id}}',
-    ng-class="{true: 'display-inline', false: 'display-none'}[permissionHide]", type="button") 隐藏文章
+    ng-class="{true: 'display-inline', false: 'display-none'}[permissionHide]", type="button")
+    span.glyphicon.glyphicon-lock.span-right-10
+    span 隐藏文章
 
 
   form(class="comment-form" ng-class="{true: 'display-block', false: 'display-none'}[formType]")
@@ -23,14 +31,16 @@ section
       textarea.form-control(ng-model='form.commentText', cols='50', rows='3')
     .cow
       div(class="alert alert-danger" ng-class="{true: 'display-none', false: 'display-block'}[alertType]" ,   role="alert") 文本内容不可空
-      button.btn.btn-success(ng-click='submitComment()', type="submit") 提交
+      button.btn.btn-success(ng-click='submitComment()', type="submit")
+        span.glyphicon.glyphicon-check.span-right-10
+        span 提交
   
   div(ng-repeat='comment in comments')
     .panel.panel-default.comment-panel
       .panel-body
         .media
           .media-left
-            img.media-object.img-size(src="img/head.jpg", alt="...")
+            img.media-object.img-size.img-head(src="img/head.jpg", alt="...")
           .media-body
             h4.media-heading {{ comment.author }}
             pre.my-pre

@@ -1,9 +1,12 @@
 //- p There are {{posts.length}} posts
 
 form.form-inline.containter-marbottom-20(role="search")
-  a.btn.btn-success(href="/addPost", role="button") 发布新文章
+  a.btn.btn-success(href="/addPost", role="button")
+    span.glyphicon.glyphicon-edit.span-right-10
+    span 发布新文章
   .form-group.btn-left-20
-    input.form-control.search-form(type="text", placeholder="Search", ng-model="key")
+    span.glyphicon.glyphicon-search.span-right-10(aria-hidden="true")
+    input.form-control.search-form(type="text", placeholder="搜索标题", ng-model="key")
 div(ng-repeat='post in posts | filter : {title : key}')
   .panel.panel-default
     .panel-heading
