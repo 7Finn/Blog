@@ -3,11 +3,11 @@ section
     .panel-heading
       .panel-title {{post.title}}
     .panel-body 
-      p Author: {{post.author}}
+      p 作者: {{post.author}}
       span(ng-class="{true: 'text-danger', false: ''}[post.hide]") {{post.text}}
   button(class="btn btn-success",
     ng-class="{true: 'display-inline', false: 'display-none'}[permissionComment]",
-    ng-click="addComment()") 评论
+    ng-click="addComment()") 添加评论
   a(class="btn btn-primary btn-left-20", href='/editPost/{{post._id}}',
     ng-class="{true: 'display-inline', false: 'display-none'}[permissionEdit]", type="button") 编辑文章
   a(class="btn btn-danger btn-left-20", href='/deletePost/{{post._id}}',

@@ -133,6 +133,7 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
     });
   $scope.addComment = function () {
     $scope.formType = ($scope.formType == true) ? false : true;
+    $scope.alertType = true;
   };
 
   $scope.submitComment = function () {
