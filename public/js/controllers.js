@@ -23,7 +23,8 @@ function EditCommentCtrl($scope, $http, $location, $routeParams) {
   $scope.alertType = true;
   $http.get('/api/comment/' + $routeParams.id).
     success(function(data) {
-      $scope.form.text = data.comment.commentText;
+      if (data) $scope.form.text = data.comment.commentText;
+      else $location.url('/error');
     });
 
   $scope.editComment = function () {
@@ -43,7 +44,8 @@ function DeleteCommentCtrl($scope, $http, $location, $routeParams) {
 
   $http.get('/api/comment/' + $routeParams.id).
     success(function(data) {
-      $scope.commentText = data.comment.commentText;
+      if (data) $scope.commentText = data.comment.commentText;
+      else $location.url('/error');
     });
 
   $scope.deleteComment = function () {
@@ -65,7 +67,8 @@ function DeleteCommentCtrl($scope, $http, $location, $routeParams) {
 function HideCommentCtrl($scope, $http, $location, $routeParams) {
   $http.get('/api/comment/' + $routeParams.id).
     success(function(data) {
-      $scope.commentText = data.comment.commentText;
+      if (data) $scope.commentText = data.comment.commentText;
+      else $location.url('/error');
     });
 
   $scope.hideComment = function () {
@@ -160,9 +163,10 @@ function ReadPostCtrl($scope, $http, $location, $routeParams) {
 function EditPostCtrl($scope, $http, $location, $routeParams) {
   $scope.form = {};
   $scope.alertType = true;
-  $http.get('/api/post/' + $routeParams.id).
+  $http.get('/api/getPost/' + $routeParams.id).
     success(function(data) {
-      $scope.form = data.post;
+      if (data) $scope.form = data.post;
+      else $location.url('/error');
     });
 
   $scope.editPost = function () {
@@ -179,9 +183,10 @@ function EditPostCtrl($scope, $http, $location, $routeParams) {
 }
 
 function DeletePostCtrl($scope, $http, $location, $routeParams) {
-  $http.get('/api/post/' + $routeParams.id).
+  $http.get('/api/getPost/' + $routeParams.id).
     success(function(data) {
-      $scope.post = data.post;
+      if (data) $scope.post = data.post;
+      else $location.url('/error');
     });
 
   $scope.deletePost = function () {
@@ -198,9 +203,10 @@ function DeletePostCtrl($scope, $http, $location, $routeParams) {
 }
 
 function HidePostCtrl($scope, $http, $location, $routeParams) {
-  $http.get('/api/post/' + $routeParams.id).
+  $http.get('/api/getPost/' + $routeParams.id).
     success(function(data) {
-      $scope.post = data.post;
+      if (data) $scope.post = data.post;
+      else $location.url('/error');
     });
 
   $scope.hidePost = function () {

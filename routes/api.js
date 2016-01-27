@@ -96,16 +96,22 @@ module.exports = function(db) {
 
   router.route('/comment/:id')
   .get(function(req, res, next) {
-    var id = req.params.id;
-    commentsManager.getComment(id)
-    .then(function(data) {
-      if (data.author != req.session.user.username
-        && req.session.user.username != 'admin@finn.com' 
-        && data.hide) data.commentText = "#该内容已被管理员隐藏#";
-      res.json({
-        comment : data
+    if (req.session.user) {
+      var id = req.params.id;
+      commentsManager.getComment(id)
+      .then(function(data) {
+        console.log(data);
+        if (data.author != req.session.user.username
+          && req.session.user.username != 'admin@finn.com' 
+          && data.hide) data.commentText = "#该内容已被管理员隐藏#";
+        res.json({
+          comment : data
+        })
       })
-    })
+    } else {
+      res.json(false);
+    }
+    
   })
   .put(function(req, res, next) {
     var id = req.params.id;
@@ -176,7 +182,8 @@ module.exports = function(db) {
   });
 
   router.put('/post/hide/:id', function(req, res, next) {
-    if (req.session.user.username != "admin@finn.com") res.json(false);
+    if (!req.session.user) res.json(false);
+    else if (req.session.user.username != "admin@finn.com") res.json(false);
     else {
       var id = req.params.id;
       console.log("/post/hide/:" + id);
@@ -184,6 +191,22 @@ module.exports = function(db) {
       res.json(true);
     }
   });
+
+  router.get('/getPost/:id', function(req, res, next) {
+    if (req.session.user) {
+      var id = req.params.id;
+      postsManager.findPost(id)
+      .then(function(data) {
+        if (data.author != req.session.user.username
+          && req.session.user.username != 'admin@finn.com' 
+          && data.hide) data.text = "#该内容已被管理员隐藏#";
+        res.json({
+          post : data
+        })
+      })
+    } else res.json(false);
+  })
+
 
   router.route('/post/:id')
   .get(function(req, res, next) {
