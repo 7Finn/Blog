@@ -24,11 +24,27 @@ textarea {
   display: inline;
 }
 
+.my-pre {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  font-size: 14px;
+}
 
 .comment-operation {
+  list-style: none;
+  padding: 8px 15px;
+  border-radius: 4px;
   background: none;
   margin-bottom: 0;
   text-align: right;
+}
+
+.comment-operation > li{
+  margin: 0 5px;
+  display: inline-block;
 }
 
 .search-form {

@@ -10,4 +10,5 @@ div(ng-repeat='post in posts | filter : {title : key}')
       a(href='/readPost/{{post.id}}').panel-title {{post.title}}
       span.span-left-30 作者: {{post.author}}
     .panel-body
-      span(ng-class="{true: 'text-danger', false: ''}[post.hide]") {{post.text}}
+      pre.my-pre
+        span(ng-class="{true: 'text-danger', false: ''}[post.hide]") {{post.text}}

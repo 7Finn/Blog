@@ -37,7 +37,7 @@ module.exports = function(db) {
       data.forEach(function (post, i) {
         var subText = post.text;
         if (post.hide == true) subText = "#该内容已被管理员隐藏#";
-        else if (post.text.length > 200) subText = subText.substr(0, 200) + '...';
+        else if (post.text.length > 100) subText = subText.substr(0, 100) + '...';
         posts.push({
           id: post._id,
           author : post.author,

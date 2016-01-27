@@ -4,7 +4,8 @@ section
       .panel-title {{post.title}}
     .panel-body 
       p 作者: {{post.author}}
-      span(ng-class="{true: 'text-danger', false: ''}[post.hide]") {{post.text}}
+      pre.my-pre
+        span(ng-class="{true: 'text-danger', false: ''}[post.hide]") {{post.text}}
   button(class="btn btn-success",
     ng-class="{true: 'display-inline', false: 'display-none'}[permissionComment]",
     ng-click="addComment()") 添加评论
@@ -32,8 +33,9 @@ section
             img.media-object.img-size(src="img/head.jpg", alt="...")
           .media-body
             h4.media-heading {{ comment.author }}
-            span(ng-class="{true: 'text-danger', false: ''}[comment.hide]") {{ comment.commentText }}
-      ol.breadcrumb.comment-operation
+            pre.my-pre
+              span(ng-class="{true: 'text-danger', false: ''}[comment.hide]") {{ comment.commentText }}
+      ol.comment-operation
         li
           a(href="/editComment/{{comment._id}}", ng-class="{true: 'display-inline', false: 'display-none'}[comment.permissionEdit]") 修改评论
         li
