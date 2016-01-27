@@ -1,17 +1,21 @@
 //- p There are {{posts.length}} posts
 
 form.form-inline.containter-marbottom-20(role="search")
-  a.btn.btn-success(href="/addPost", role="button")
+  a.btn.btn-success.float-right(href="/addPost", role="button")
     span.glyphicon.glyphicon-edit.span-right-10
     span 发布新文章
-  .form-group.btn-left-20
-    span.glyphicon.glyphicon-search.span-right-10(aria-hidden="true")
-    input.form-control.search-form(type="text", placeholder="搜索标题", ng-model="key")
-div(ng-repeat='post in posts | filter : {title : key}')
-  .panel.panel-default
-    .panel-heading
-      a(href='/readPost/{{post.id}}').panel-title {{post.title}}
-      span.span-left-30 作者: {{post.author}}
-    .panel-body
-      pre.my-pre
-        span(ng-class="{true: 'text-danger', false: ''}[post.hide]") {{post.text}}
+  
+  h4 
+    span.glyphicon.glyphicon-search.span-right-10
+    span 搜索标题或作者:
+
+table.table(ng-table="tableParams", show-filter="true")
+  tr(ng-repeat="post in $data | filter : key")
+    td.no-border(filter="{title: 'text'}")
+      .panel.panel-default
+        .panel-heading
+          a(href='/readPost/{{post.id}}' data-title="'title'").panel-title {{post.title}}
+          span.span-left-30 作者: {{post.author}}
+        .panel-body
+          pre.my-pre
+            span(ng-class="{true: 'text-danger', false: ''}[post.hide]") {{post.text}}

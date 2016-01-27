@@ -33,6 +33,26 @@ textarea {
   font-size: 14px;
 }
 
+.table>thead>tr>th {
+  border-top: none;
+  border-bottom: none;
+  padding: 0;
+}
+
+.table>tbody>tr>td {
+  border-top: none; 
+  padding: 0;
+}
+
+.float-right {
+  float: right;
+}
+
+.ng-table th.filter .input-filter {
+  width: 300px;
+  margin-bottom: 20px;
+}
+
 .comment-operation {
   list-style: none;
   padding: 8px 15px;

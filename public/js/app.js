@@ -1,8 +1,9 @@
 'use strict';
 
 // Declare app level module which depends on filters, and services
-angular.module('myApp', ['ngRoute', 'navCtrl']).
-  config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+angular.module('myApp', ['ngRoute', 'navCtrl', 'ngTable']).
+  config(['$routeProvider', '$locationProvider',
+    function($routeProvider, $locationProvider) {
     $routeProvider.
       when('/', {
         templateUrl: 'partials/index',

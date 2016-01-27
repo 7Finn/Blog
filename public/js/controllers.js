@@ -2,17 +2,24 @@
 
 /* Controllers */
 
-function IndexCtrl($scope, $http) {
-  $scope.key = "";
+function IndexCtrl($scope, $http, NgTableParams) {
+  $scope.key = "";  
   $http.get('/api/posts').
     success(function(data, status, headers, config) {
-      $scope.posts = data.posts;
+      $scope.tableParams = new NgTableParams({
+        page: 1, // show first page
+        count: 5, // count per page
+      }, {
+        counts: [5, 10, 15], 
+        dataset: data.posts
+      });
     });
 }
 
 function ErrorCtrl($scope, $http) {
 
 }
+
 
 //----------------------------------评论板块----------------------------------------------//
 
@@ -292,9 +299,8 @@ function RegistCtrl($scope, $http, $location) {
   };
 }
 
-var navCtrl = angular.module('navCtrl', []);
-
-navCtrl.controller('navCtrl', function($scope, $rootScope, $http) {
+var navCtrl = angular.module('navCtrl', [])
+  .controller('navCtrl', function($scope, $rootScope, $http) {
   $rootScope.currentUsername = '';
   $rootScope.signAdress = '';
   $rootScope.sign = '';
