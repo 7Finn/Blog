@@ -2,13 +2,13 @@
 基于[Angular Express Seed](https://github.com/btford/angular-express-seed)搭建的博客，前端使用[AngularJS](http://angularjs.org/)，后端使用 [Express](http://expressjs.com/)。并使用[Bootstrap](http://www.bootcss.com/)框架，以及[MongoDB](https://www.mongodb.com/)作数据库。
 ### 运行步骤
 1. 安装依赖模块
-```
-npm install
-```
+	```
+	npm install
+	```
 2. 运行
-```
-npm start
-```
+	```
+	npm start
+	```
 3. 在浏览器中打开本地的8000端口: localhost:8000
 
 ### 功能介绍
